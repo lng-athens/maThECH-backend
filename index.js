@@ -3,8 +3,7 @@ const cors = require('cors');
 const app = express();
 const port = process.env.SERVER_PORT || 3000;
 
-const teacherRoutes = require('./routes/teacherRoutes');
-const studentRoutes = require('./routes/studentRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 app.use(cors());
 app.use(express.json());
@@ -21,7 +20,6 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Credentials', true);
     next();
 });
-app.use('/teacher', teacherRoutes);
-app.use('/student', studentRoutes);
+app.use('/user', userRoutes);
 
 app.listen(port, () => console.log(`Server is now running at port ${port}`));

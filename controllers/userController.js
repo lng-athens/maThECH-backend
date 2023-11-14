@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const auth = require('../auth');
-const Student = require('../models/Student');
+const User = require('../models/User');
 const { MongoClient, ObjectId, ServerApiVersion } = require('mongodb');
 require('dotenv').config();
 
@@ -19,7 +19,7 @@ async function connectToDatabase() {
 
     await client.connect();
     database = client.db(process.env.DB_COLLECTION);
-    dataCollection = database.collection('students');
+    dataCollection = database.collection('users');
 };
 
 async function closeDatabaseConnection() {
@@ -30,26 +30,27 @@ async function closeDatabaseConnection() {
 
 module.exports.signup = async (reqBody) => {
     try {
-        const {firstName, middleName, lastName, email, password} = reqBody;
+        const {firstName, middleName, lastName, email, mobile_no, password} = reqBody;
         await connectToDatabase();
         const filter = {email: email};
 
-        const student = await dataCollection.findOne(filter);
+        const user = await dataCollection.findOne(filter);
 
-        if (student) {
+        if (user) {
             return {success: false, message: 'Account already exist!'};
         }
 
         const hashedPassword = bcrypt.hash(password, 10);
-        const newStudent = new Student({
+        const newUser = new User({
             firstName,
             middleName,
             lastName,
             email,
+            mobile_no,
             password: hashedPassword,
         });
 
-        await dataCollection.insertOne(newStudent);
+        await dataCollection.insertOne(newUser);
         return {success: true, message: 'Account successfuly created!'};
     }
     catch (error) {
@@ -66,17 +67,17 @@ module.exports.login = async (reqBody) => {
         await connectToDatabase();
         const filter = {email: email};
 
-        const student = await dataCollection.findOne(filter);
-        if (!student) {
+        const user = await dataCollection.findOne(filter);
+        if (!user) {
             return {success: false, message: 'Account does not exist!'};
         }
 
-        const passMatch = bcrypt.compare(password, student.password);
+        const passMatch = bcrypt.compare(password, user.password);
         if (!passMatch) {
             return {success: false, message: 'Password does not match!'};
         }
 
-        const token = auth.createAccessToken(student);
+        const token = auth.createAccessToken(user);
         return {success: true, message: 'Account logged in!', access: token};
     }
     catch (error) {
