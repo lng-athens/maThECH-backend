@@ -27,3 +27,35 @@ async function closeDatabaseConnection() {
     dataCollection = null;
     await client.close();
 }
+
+module.exports.signup = async (reqBody) => {
+    try {
+        const {firstName, middleName, lastName, email, password} = reqBody;
+        await connectToDatabase();
+        const filter = {email: email};
+
+        const teacher = await dataCollection.findOne(filter);
+
+        if (teacher) {
+            return {success: false, message: 'Account already exist!'};
+        }
+
+        const hashedPassword = bcrypt.hash(password, 10);
+        const newTeacher = new Teacher({
+            firstName,
+            middleName,
+            lastName,
+            email,
+            password: hashedPassword,
+        });
+
+        await dataCollection.insertOne(newTeacher);
+        return {success: true, message: 'Account successfuly created!'};
+    }
+    catch (error) {
+        return {success: false, message: error.message};
+    }
+    finally {
+        await closeDatabaseConnection();
+    }
+};
