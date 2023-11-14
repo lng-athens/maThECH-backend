@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const auth = require('../auth');
 const Student = require('../models/Student');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ObjectId, ServerApiVersion } = require('mongodb');
 require('dotenv').config();
 
 let client, database, dataCollection;
@@ -19,7 +19,7 @@ async function connectToDatabase() {
 
     await client.connect();
     database = client.db(process.env.DB_COLLECTION);
-    dataCollection = database.collection('teachers');
+    dataCollection = database.collection('students');
 };
 
 async function closeDatabaseConnection() {
@@ -61,8 +61,8 @@ module.exports.signup = async (reqBody) => {
 };
 
 module.exports.login = async (reqBody) => {
-    try{
-        const [email, password] = reqBody;
+    try {
+        const {email, password} = reqBody;
         await connectToDatabase();
         const filter = {email: email};
 
@@ -78,6 +78,29 @@ module.exports.login = async (reqBody) => {
 
         const token = auth.createAccessToken(student);
         return {success: true, message: 'Account logged in!', access: token};
+    }
+    catch (error) {
+        return {success: false, message: error.message};
+    }
+    finally {
+        await closeDatabaseConnection();
+    }
+};
+
+module.exports.details = async (user) => {
+    try {
+        const {id} = user;
+        await connectToDatabase();
+        const userId = new ObjectId(id);
+        const filter = {_id: userId};
+        const options = {projection: {password: 0}};
+
+        const userDetails = await dataCollection.findOne(filter, options);
+        if (!userDetails) {
+            return {success: false, message: 'Account not found!'};
+        }
+
+        return userDetails;
     }
     catch (error) {
         return {success: false, message: error.message};

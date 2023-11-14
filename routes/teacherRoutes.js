@@ -11,4 +11,10 @@ router.post('/login', (req, res) => {
     teacherController.login(req.body).then(resultFromController => res.send(resultFromController));
 });
 
+router.get('/details', auth.verify, (req, res) => {
+    let userData = auth.decode(req.headers.authorization);
+
+    teacherController.details(userData).then(resultFromController => res.send(resultFromController));
+});
+
 module.exports = router;
