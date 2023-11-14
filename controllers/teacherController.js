@@ -59,3 +59,30 @@ module.exports.signup = async (reqBody) => {
         await closeDatabaseConnection();
     }
 };
+
+module.exports.login = async (reqBody) => {
+    try{
+        const [email, password] = reqBody;
+        await connectToDatabase();
+        const filter = {email: email};
+
+        const teacher = await dataCollection.findOne(filter);
+        if (!teacher) {
+            return {success: false, message: 'Account does not exist!'};
+        }
+
+        const passMatch = bcrypt.compare(password, teacher.password);
+        if (!passMatch) {
+            return {success: false, message: 'Password does not match!'};
+        }
+
+        const token = auth.createAccessToken(teacher);
+        return {success: true, message: 'Account logged in!', access: token};
+    }
+    catch (error) {
+        return {success: false, message: error.message};
+    }
+    finally {
+        await closeDatabaseConnection();
+    }
+};
