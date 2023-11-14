@@ -62,7 +62,7 @@ module.exports.signup = async (reqBody) => {
 
 module.exports.login = async (reqBody) => {
     try{
-        const [email, password] = reqBody;
+        const {email, password} = reqBody;
         await connectToDatabase();
         const filter = {email: email};
 
