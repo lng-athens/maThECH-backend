@@ -30,7 +30,7 @@ async function closeDatabaseConnection() {
 
 module.exports.signup = async (reqBody) => {
     try {
-        const {firstName, middleName, lastName, email, password, role} = reqBody;
+        const {firstName, middleName, lastName, email, password} = reqBody;
         await connectToDatabase();
         const filter = {email: email};
 
