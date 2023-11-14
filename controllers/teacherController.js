@@ -7,7 +7,7 @@ require('dotenv').config();
 let client, database, dataCollection;
 
 async function connectToDatabase() {
-    client = new MongoClient(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@webportfolio.w5tlr5k.mongodb.net/?retryWrites=true&w=majority`, {
+    client = new MongoClient(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@webportfolio.w5tlr5k.mongodb.net/maThECH?retryWrites=true&w=majority`, {
         serverApi: {
             version: ServerApiVersion.v1,
             strict: true,
