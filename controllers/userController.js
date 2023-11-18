@@ -42,11 +42,11 @@ module.exports.signup = async (reqBody) => {
 
         const hashedPassword = bcrypt.hash(password, 10);
         const newUser = new User({
-            firstName,
-            middleName,
-            lastName,
-            email,
-            mobile_no,
+            firstName: firstName,
+            middleName: middleName,
+            lastName: lastName,
+            email: email,
+            mobile_no: mobile_no,
             password: hashedPassword,
         });
 
