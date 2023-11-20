@@ -4,6 +4,7 @@ const app = express();
 const port = process.env.SERVER_PORT || 3000;
 
 const userRoutes = require('./routes/userRoutes');
+const chatRoutes = require('./routes/chatRoutes');
 
 app.use(cors());
 app.use(express.json());
@@ -21,5 +22,6 @@ app.use((req, res, next) => {
     next();
 });
 app.use('/user', userRoutes);
+app.use('/chat', chatRoutes);
 
 app.listen(port, () => console.log(`Server is now running at port ${port}`));
